@@ -8,4 +8,6 @@ license = "MIT"
 edition = "2018"
 
 [dependencies]
+anyhow = "1.0.31"
 clap = "3.0.0-beta.1"
+directories-next = "1.0.0"
