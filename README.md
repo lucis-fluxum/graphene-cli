@@ -1,14 +1,7 @@
-# GrapheneCli
+# graphene-cli
 
-GrapheneCli is an application.
-
-## Getting Started
+A command-line client for the GrapheneDB API.
 
 This application is authored using [Abscissa], a Rust application framework.
 
-For more information, see:
-
-[Documentation]
-
 [Abscissa]: https://github.com/iqlusioninc/abscissa
-[Documentation]: https://docs.rs/abscissa_core/
