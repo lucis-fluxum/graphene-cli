@@ -87,5 +87,5 @@ fn start_with_config_and_args() {
 fn version_no_args() {
     let mut runner = RUNNER.clone();
     let mut cmd = runner.arg("version").capture_stdout().run();
-    cmd.stdout().expect_regex(r"\A\w+ [\d\.\-]+\z");
+    cmd.stdout().expect_regex(r"\A[\w\-]+ [\d\.\-]+\z");
 }
