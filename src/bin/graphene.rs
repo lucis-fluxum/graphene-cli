@@ -1,15 +1,16 @@
 use anyhow::anyhow;
 use clap::{crate_description, crate_name, crate_version, App, AppSettings};
 use directories_next::ProjectDirs;
-use graphene_cli::config;
+use graphene_cli::config::get_or_create_config;
 
 fn main() -> anyhow::Result<()> {
+    dotenv::dotenv().ok();
+    pretty_env_logger::init();
+
     let project_dirs = ProjectDirs::from("", "", "graphene-cli")
         .ok_or(anyhow!("couldn't find home directory path"))?;
-    println!(
-        "cli config: {:?}",
-        config::get_or_create_config(&project_dirs.config_dir().join("config.toml"))
-    );
+    let config = get_or_create_config(&project_dirs.config_dir().join("config.toml"))?;
+    log::debug!("loaded config: {:?}", config);
 
     App::new(crate_name!())
         .about(crate_description!())
