@@ -52,14 +52,19 @@ impl Config {
         self.api_key.as_deref()
     }
 
-    pub fn configure_api_key(&mut self) -> Result<()> {
-        log::debug!("prompting user for API key");
-        let mut api_key = String::new();
-        while api_key.trim().is_empty() {
-            print!("Enter API client key: ");
-            io::stdout().flush()?;
-            io::stdin().read_line(&mut api_key)?;
-        }
+    pub async fn configure_api_key(&mut self) -> Result<()> {
+        let api_key = tokio::task::spawn_blocking::<_, Result<String>>(|| {
+            log::debug!("prompting user for API key");
+            let mut api_key = String::new();
+            while api_key.trim().is_empty() {
+                print!("Enter API client key: ");
+                io::stdout().flush()?;
+                io::stdin().read_line(&mut api_key)?;
+            }
+            Ok(api_key)
+        })
+        .await??;
+
         self.api_key.replace(api_key.trim().to_string());
         Ok(())
     }

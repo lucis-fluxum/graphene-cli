@@ -15,7 +15,7 @@ async fn main() -> Result<()> {
     log::debug!("loaded config: {:?}", config);
 
     if config.api_key().is_none() {
-        config.configure_api_key()?;
+        config.configure_api_key().await?;
         config.save().await?;
     }
 
