@@ -2,7 +2,6 @@ use anyhow::anyhow;
 use clap::{crate_description, crate_name, crate_version, App, AppSettings};
 use directories_next::ProjectDirs;
 use graphene_cli::config::Config;
-use std::io::{self, Write};
 
 fn main() -> anyhow::Result<()> {
     dotenv::dotenv().ok();
@@ -15,7 +14,7 @@ fn main() -> anyhow::Result<()> {
     log::debug!("loaded config: {:?}", config);
 
     if config.api_key.is_none() {
-        config.api_key = Some(prompt_for_api_key()?);
+        config.configure_api_key()?;
         config.save(&config_path)?;
     }
 
@@ -32,12 +31,3 @@ fn main() -> anyhow::Result<()> {
     Ok(())
 }
 
-fn prompt_for_api_key() -> anyhow::Result<String> {
-    let mut api_key = String::new();
-    while api_key.trim().is_empty() {
-        print!("Enter API client key: ");
-        io::stdout().flush()?;
-        io::stdin().read_line(&mut api_key)?;
-    }
-    Ok(api_key.trim().to_string())
-}

@@ -1,8 +1,13 @@
 use anyhow::Context;
 use serde::{Deserialize, Serialize};
-use std::{fs, path::Path};
+use std::{
+    fs,
+    io::{self, Write},
+    path::Path,
+};
 
 #[derive(Debug, Serialize, Deserialize)]
+// TODO: Clean up this interface, maybe add some accessors or make Config store its path
 pub struct Config {
     pub api_key: Option<String>,
 }
@@ -10,6 +15,17 @@ pub struct Config {
 impl Config {
     pub fn new(api_key: Option<String>) -> Self {
         Config { api_key }
+    }
+
+    pub fn configure_api_key(&mut self) -> anyhow::Result<()> {
+        let mut api_key = String::new();
+        while api_key.trim().is_empty() {
+            print!("Enter API client key: ");
+            io::stdout().flush()?;
+            io::stdin().read_line(&mut api_key)?;
+        }
+        self.api_key.replace(api_key.trim().to_string());
+        Ok(())
     }
 
     pub fn load(path: &Path) -> anyhow::Result<Self> {
