@@ -1,10 +1,10 @@
-use anyhow::anyhow;
+use anyhow::{anyhow, Result};
 use clap::{crate_description, crate_name, crate_version, App, AppSettings};
 use directories_next::ProjectDirs;
 use graphene_cli::config::Config;
 
 #[tokio::main]
-async fn main() -> anyhow::Result<()> {
+async fn main() -> Result<()> {
     dotenv::dotenv().ok();
     pretty_env_logger::init();
 

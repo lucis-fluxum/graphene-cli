@@ -1,4 +1,4 @@
-use anyhow::Context;
+use anyhow::{Context, Result};
 use serde::{Deserialize, Serialize};
 use std::{
     io::{self, Write},
@@ -18,7 +18,7 @@ impl Config {
         Config { path, api_key }
     }
 
-    pub async fn load(path: &Path) -> anyhow::Result<Self> {
+    pub async fn load(path: &Path) -> Result<Self> {
         let config: Config = if path.exists() {
             log::debug!("loading config from {}", path.to_string_lossy());
             let mut deserialized_config: Self = toml::from_str(
@@ -52,7 +52,7 @@ impl Config {
         self.api_key.as_deref()
     }
 
-    pub fn configure_api_key(&mut self) -> anyhow::Result<()> {
+    pub fn configure_api_key(&mut self) -> Result<()> {
         log::debug!("prompting user for API key");
         let mut api_key = String::new();
         while api_key.trim().is_empty() {
@@ -64,7 +64,7 @@ impl Config {
         Ok(())
     }
 
-    pub async fn save(&self) -> anyhow::Result<()> {
+    pub async fn save(&self) -> Result<()> {
         log::debug!("saving config: {:?}", self);
         let parent = self.path.parent().context("invalid config dir")?;
         if !parent.exists() {
