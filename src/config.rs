@@ -10,6 +10,7 @@ use tokio::fs;
 pub struct Config {
     #[serde(skip)]
     path: PathBuf,
+    // TODO: Make api_key mandatory instead of an Option
     api_key: Option<String>,
 }
 
