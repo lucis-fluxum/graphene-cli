@@ -1,3 +1,4 @@
+use anyhow::Result;
 use crate::{config::Config, model};
 
 pub struct DbCmd<'a> {
@@ -9,19 +10,16 @@ impl<'a> DbCmd<'a> {
         Self { config }
     }
 
-    pub async fn list(&self) {
+    pub async fn list(&self) -> Result<Vec<model::Database>> {
         let client = reqwest::Client::new();
         let response = client
             .get("https://api.graphenedb.com/v1/databases")
             .header("api_key", self.config.api_key().unwrap())
             .send()
-            .await
-            .unwrap()
+            .await?
             .text()
-            .await
-            .unwrap();
+            .await?;
         log::debug!("response: {}", response);
-        let dbs: Vec<model::Db> = serde_json::from_str(&response).unwrap();
-        log::debug!("resulting dbs: {:#?}", dbs);
+        Ok(serde_json::from_str(&response)?)
     }
 }

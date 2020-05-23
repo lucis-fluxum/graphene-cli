@@ -38,7 +38,10 @@ async fn main() -> Result<()> {
         ("db", Some(matches)) => {
             let db_cmd = subcommand::db::DbCmd::new(&config);
             match matches.subcommand() {
-                ("list", _) => db_cmd.list().await,
+                ("list", _) => {
+                    let result = db_cmd.list().await;
+                    log::debug!("{:#?}", result);
+                }
                 _ => {}
             }
         }

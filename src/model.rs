@@ -16,7 +16,7 @@ pub struct Counters {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct Db {
+pub struct Database {
     id: String,
     name: String,
     #[serde(rename = "isCluster")]
