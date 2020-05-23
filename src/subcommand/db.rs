@@ -1,4 +1,4 @@
-use crate::config::Config;
+use crate::{config::Config, model};
 
 pub struct DbCmd<'a> {
     config: &'a Config,
@@ -16,7 +16,12 @@ impl<'a> DbCmd<'a> {
             .header("api_key", self.config.api_key().unwrap())
             .send()
             .await
+            .unwrap()
+            .text()
+            .await
             .unwrap();
-        log::debug!("response: {}", response.text().await.unwrap());
+        log::debug!("response: {}", response);
+        let dbs: Vec<model::Db> = serde_json::from_str(&response).unwrap();
+        log::debug!("resulting dbs: {:#?}", dbs);
     }
 }
