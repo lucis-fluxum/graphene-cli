@@ -15,7 +15,7 @@ fn main() -> anyhow::Result<()> {
 
     if config.api_key().is_none() {
         config.configure_api_key()?;
-        config.save(&config_path)?;
+        config.save()?;
     }
 
     App::new(crate_name!())
