@@ -3,19 +3,20 @@ use clap::{crate_description, crate_name, crate_version, App, AppSettings};
 use directories_next::ProjectDirs;
 use graphene_cli::config::Config;
 
-fn main() -> anyhow::Result<()> {
+#[tokio::main]
+async fn main() -> anyhow::Result<()> {
     dotenv::dotenv().ok();
     pretty_env_logger::init();
 
     let project_dirs = ProjectDirs::from("", "", "graphene-cli")
         .ok_or(anyhow!("couldn't find home directory path"))?;
     let config_path = project_dirs.config_dir().join("config.toml");
-    let mut config = Config::load(&config_path)?;
+    let mut config = Config::load(&config_path).await?;
     log::debug!("loaded config: {:?}", config);
 
     if config.api_key().is_none() {
         config.configure_api_key()?;
-        config.save()?;
+        config.save().await?;
     }
 
     App::new(crate_name!())

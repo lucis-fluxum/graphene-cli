@@ -1,10 +1,10 @@
 use anyhow::Context;
 use serde::{Deserialize, Serialize};
 use std::{
-    fs,
     io::{self, Write},
     path::{Path, PathBuf},
 };
+use tokio::fs;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Config {
@@ -18,20 +18,26 @@ impl Config {
         Config { path, api_key }
     }
 
-    pub fn load(path: &Path) -> anyhow::Result<Self> {
+    pub async fn load(path: &Path) -> anyhow::Result<Self> {
         let config: Config = if path.exists() {
             log::debug!("loading config from {}", path.to_string_lossy());
-            let mut deserialized_config: Self =
-                toml::from_str(&fs::read_to_string(path).context("couldn't read config file")?)
-                    .context("couldn't parse config file")?;
+            let mut deserialized_config: Self = toml::from_str(
+                &fs::read_to_string(path)
+                    .await
+                    .context("couldn't read config file")?,
+            )
+            .context("couldn't parse config file")?;
             // We don't store the config location in the config file, so add it here
             deserialized_config.path = path.to_path_buf();
             deserialized_config
         } else {
             log::debug!("no config found, creating empty one");
             fs::create_dir_all(path.parent().context("invalid config dir")?)
+                .await
                 .context("couldn't create config directory")?;
-            fs::File::create(path).context("couldn't create config file")?;
+            fs::File::create(path)
+                .await
+                .context("couldn't create config file")?;
             Config::new(path.to_path_buf(), None)
         };
 
@@ -58,13 +64,13 @@ impl Config {
         Ok(())
     }
 
-    pub fn save(&self) -> anyhow::Result<()> {
+    pub async fn save(&self) -> anyhow::Result<()> {
         log::debug!("saving config: {:?}", self);
         let parent = self.path.parent().context("invalid config dir")?;
         if !parent.exists() {
             log::debug!("no config dir found, creating one");
-            fs::create_dir_all(parent)?;
+            fs::create_dir_all(parent).await?;
         }
-        Ok(fs::write(&self.path, toml::to_string(self)?)?)
+        Ok(fs::write(&self.path, toml::to_string(self)?).await?)
     }
 }
