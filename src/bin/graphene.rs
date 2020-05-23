@@ -14,7 +14,7 @@ async fn main() -> Result<()> {
     let mut config = Config::load(&config_path).await?;
     log::debug!("loaded config: {:?}", config);
 
-    if config.api_key().is_none() {
+    if config.api_key().is_empty() {
         config.configure_api_key().await?;
         config.save().await?;
     }

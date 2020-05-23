@@ -10,12 +10,11 @@ use tokio::fs;
 pub struct Config {
     #[serde(skip)]
     path: PathBuf,
-    // TODO: Make api_key mandatory instead of an Option
-    api_key: Option<String>,
+    api_key: String,
 }
 
 impl Config {
-    pub fn new(path: PathBuf, api_key: Option<String>) -> Self {
+    pub fn new(path: PathBuf, api_key: String) -> Self {
         Config { path, api_key }
     }
 
@@ -39,7 +38,7 @@ impl Config {
             fs::File::create(path)
                 .await
                 .context("couldn't create config file")?;
-            Config::new(path.to_path_buf(), None)
+            Config::new(path.to_path_buf(), String::new())
         };
 
         Ok(config)
@@ -49,8 +48,8 @@ impl Config {
         &self.path
     }
 
-    pub fn api_key(&self) -> Option<&str> {
-        self.api_key.as_deref()
+    pub fn api_key(&self) -> &str {
+        &self.api_key
     }
 
     pub async fn configure_api_key(&mut self) -> Result<()> {
@@ -66,7 +65,7 @@ impl Config {
         })
         .await??;
 
-        self.api_key.replace(api_key.trim().to_string());
+        self.api_key = api_key.trim().to_string();
         Ok(())
     }
 

@@ -14,7 +14,7 @@ impl<'a> DbCmd<'a> {
         let client = reqwest::Client::new();
         let response = client
             .get("https://api.graphenedb.com/v1/databases")
-            .header("api_key", self.config.api_key().unwrap())
+            .header("api_key", self.config.api_key())
             .send()
             .await?
             .text()
