@@ -1,40 +1,45 @@
+use anyhow::Result;
 use graphene_cli::config::Config;
-use std::{fs, path::PathBuf};
+use std::path::PathBuf;
+use tokio::fs;
 
-#[test]
-fn create_config_file_if_not_exists() {
+#[tokio::test]
+async fn create_config_file_if_not_exists() -> Result<()> {
     let config_dir = PathBuf::from("tests/fixtures/create_config_file");
     if config_dir.exists() {
-        fs::remove_dir_all(&config_dir).unwrap();
-        fs::create_dir_all(&config_dir).unwrap();
+        fs::remove_dir_all(&config_dir).await?;
+        fs::create_dir_all(&config_dir).await?;
     }
     let config_path = config_dir.join("config.toml");
     assert!(!config_path.exists());
-    let config = Config::load(&config_path).unwrap();
+    let config = Config::load(&config_path).await?;
     assert!(config.api_key().is_none());
     assert!(config_path.exists());
+    Ok(())
 }
 
-#[test]
-fn get_existing_config() {
+#[tokio::test]
+async fn get_existing_config() -> Result<()> {
     let config_path = PathBuf::from("tests/fixtures/existing_config_file/config.toml");
     assert!(config_path.exists());
-    let config = Config::load(&config_path).unwrap();
+    let config = Config::load(&config_path).await?;
     assert_eq!(Some("test_api_key"), config.api_key());
+    Ok(())
 }
 
-#[test]
-fn save_config() {
+#[tokio::test]
+async fn save_config() -> Result<()> {
     let config_path = PathBuf::from("tests/fixtures/save_config_file/config.toml");
     let config = Config::new(config_path.clone(), Some(String::from("test_api_key")));
     if config_path.exists() {
-        fs::remove_file(&config_path).unwrap();
+        fs::remove_file(&config_path).await?;
     }
     assert!(!config_path.exists());
-    config.save().unwrap();
+    config.save().await?;
     assert!(config_path.exists());
     assert_eq!(
         Some("test_api_key"),
-        Config::load(&config_path).unwrap().api_key()
+        Config::load(&config_path).await?.api_key()
     );
+    Ok(())
 }
