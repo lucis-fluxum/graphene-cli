@@ -9,12 +9,16 @@ use std::{
 #[derive(Debug, Serialize, Deserialize)]
 // TODO: Clean up this interface, maybe add some accessors or make Config store its path
 pub struct Config {
-    pub api_key: Option<String>,
+    api_key: Option<String>,
 }
 
 impl Config {
     pub fn new(api_key: Option<String>) -> Self {
         Config { api_key }
+    }
+
+    pub fn api_key(&self) -> Option<&str> {
+        self.api_key.as_deref()
     }
 
     pub fn configure_api_key(&mut self) -> anyhow::Result<()> {
@@ -38,7 +42,7 @@ impl Config {
             fs::create_dir_all(path.parent().context("invalid config dir")?)
                 .context("couldn't create config directory")?;
             fs::File::create(path).context("couldn't create config file")?;
-            Config { api_key: None }
+            Config::new(None)
         };
 
         Ok(config)

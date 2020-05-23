@@ -11,7 +11,7 @@ fn create_config_file_if_not_exists() {
     let config_path = config_dir.join("config.toml");
     assert!(!config_path.exists());
     let config = Config::load(&config_path).unwrap();
-    assert!(config.api_key.is_none());
+    assert!(config.api_key().is_none());
     assert!(config_path.exists());
 }
 
@@ -20,7 +20,7 @@ fn get_existing_config() {
     let config_path = Path::new("tests/fixtures/existing_config_file/config.toml");
     assert!(config_path.exists());
     let config = Config::load(config_path).unwrap();
-    assert_eq!(Some(String::from("test_api_key")), config.api_key);
+    assert_eq!(Some("test_api_key"), config.api_key());
 }
 
 #[test]
@@ -34,7 +34,7 @@ fn save_config() {
     config.save(config_path).unwrap();
     assert!(config_path.exists());
     assert_eq!(
-        Some(String::from("test_api_key"),),
-        Config::load(config_path).unwrap().api_key
+        Some("test_api_key"),
+        Config::load(config_path).unwrap().api_key()
     );
 }

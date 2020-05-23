@@ -13,7 +13,7 @@ fn main() -> anyhow::Result<()> {
     let mut config = Config::load(&config_path)?;
     log::debug!("loaded config: {:?}", config);
 
-    if config.api_key.is_none() {
+    if config.api_key().is_none() {
         config.configure_api_key()?;
         config.save(&config_path)?;
     }
