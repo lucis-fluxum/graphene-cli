@@ -1,7 +1,7 @@
 use anyhow::{anyhow, Result};
 use clap::{crate_description, crate_name, crate_version, App, AppSettings};
 use directories_next::ProjectDirs;
-use graphene_cli::{config::Config, subcommand};
+use graphene_cli::{api, config::Config};
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -36,11 +36,10 @@ async fn main() -> Result<()> {
 
     match app_matches.subcommand() {
         ("db", Some(matches)) => {
-            let db_cmd = subcommand::db::DbCmd::new(&config);
+            let db_cmd = api::db::DbCmd::new(&config);
             match matches.subcommand() {
                 ("list", _) => {
-                    let result = db_cmd.list().await;
-                    log::debug!("{:#?}", result);
+                    log::debug!("{:#?}", db_cmd.list().await);
                 }
                 _ => {}
             }
@@ -50,4 +49,3 @@ async fn main() -> Result<()> {
 
     Ok(())
 }
-
