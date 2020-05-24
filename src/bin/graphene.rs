@@ -1,5 +1,5 @@
 use anyhow::{anyhow, Result};
-use clap::{crate_description, crate_name, crate_version, App, AppSettings};
+use clap::{crate_description, crate_name, crate_version, App, AppSettings, Arg};
 use directories_next::ProjectDirs;
 use graphene_cli::{api, config::Config};
 
@@ -32,7 +32,8 @@ async fn main() -> Result<()> {
         .subcommand(
             App::new("db")
                 .setting(AppSettings::SubcommandRequiredElseHelp)
-                .subcommand(App::new("list")),
+                .subcommand(App::new("list"))
+                .subcommand(App::new("show").arg(Arg::with_name("name"))),
         )
         .get_matches();
 
@@ -42,6 +43,10 @@ async fn main() -> Result<()> {
             match matches.subcommand() {
                 ("list", _) => {
                     log::debug!("{:#?}", db_cmd.list().await);
+                }
+                ("show", Some(matches)) => {
+                    let name: String = matches.value_of_t_or_exit("name");
+                    log::debug!("{:#?}", db_cmd.show(&name).await);
                 }
                 _ => {}
             }
