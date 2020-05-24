@@ -3,7 +3,18 @@ use serde::{Deserialize, Serialize};
 // TODO: Use more accurate types for these fields, like uuid, url, chrono date times, etc.
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct Backup {}
+pub struct Backup {
+    duration: i64,
+    timestamp: String,
+    size: i64,
+    state: String,
+    id: String,
+    origin: String,
+    #[serde(rename = "packageUrl")]
+    package_url: String,
+    #[serde(rename = "isDownloadable")]
+    is_downloadable: bool,
+}
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Cluster {

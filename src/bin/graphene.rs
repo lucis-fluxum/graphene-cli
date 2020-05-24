@@ -2,7 +2,7 @@ use anyhow::{anyhow, Result};
 use clap::{crate_description, crate_name, crate_version, App, AppSettings, Arg};
 use directories_next::ProjectDirs;
 use graphene_cli::{
-    api::{db::DbCmd, version::VersionCmd},
+    api::{backup::BackupCmd, db::DbCmd, version::VersionCmd},
     config::Config,
 };
 
@@ -33,6 +33,11 @@ async fn main() -> Result<()> {
         .global_setting(AppSettings::VersionlessSubcommands)
         .global_setting(AppSettings::DisableHelpSubcommand)
         .subcommand(
+            App::new("backup")
+                .setting(AppSettings::SubcommandRequiredElseHelp)
+                .subcommand(App::new("list").arg(Arg::with_name("db_name"))),
+        )
+        .subcommand(
             App::new("db")
                 .setting(AppSettings::SubcommandRequiredElseHelp)
                 .subcommand(App::new("list"))
@@ -41,7 +46,18 @@ async fn main() -> Result<()> {
         .subcommand(App::new("versions"))
         .get_matches();
 
+    // TODO: handle unknown subcommands
     match app_matches.subcommand() {
+        ("backup", Some(matches)) => {
+            let backup_cmd = BackupCmd::new(&http_client, &config);
+            match matches.subcommand() {
+                ("list", Some(matches)) => {
+                    let name: String = matches.value_of_t_or_exit("db_name");
+                    log::debug!("{:#?}", backup_cmd.list(&name).await);
+                }
+                _ => {}
+            }
+        }
         ("db", Some(matches)) => {
             let db_cmd = DbCmd::new(&http_client, &config);
             match matches.subcommand() {
