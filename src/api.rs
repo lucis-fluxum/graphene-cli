@@ -2,6 +2,7 @@ use crate::config::Config;
 use anyhow::Result;
 use reqwest::{Client, RequestBuilder};
 
+pub mod backup;
 pub mod db;
 pub mod version;
 

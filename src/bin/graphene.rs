@@ -36,7 +36,7 @@ async fn main() -> Result<()> {
             App::new("db")
                 .setting(AppSettings::SubcommandRequiredElseHelp)
                 .subcommand(App::new("list"))
-                .subcommand(App::new("show").arg(Arg::with_name("name"))),
+                .subcommand(App::new("show").arg(Arg::with_name("db_name"))),
         )
         .subcommand(App::new("versions"))
         .get_matches();
@@ -49,7 +49,7 @@ async fn main() -> Result<()> {
                     log::debug!("{:#?}", db_cmd.list().await);
                 }
                 ("show", Some(matches)) => {
-                    let name: String = matches.value_of_t_or_exit("name");
+                    let name: String = matches.value_of_t_or_exit("db_name");
                     log::debug!("{:#?}", db_cmd.show(&name).await);
                 }
                 _ => {}

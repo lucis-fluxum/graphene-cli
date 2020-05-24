@@ -3,6 +3,9 @@ use serde::{Deserialize, Serialize};
 // TODO: Use more accurate types for these fields, like uuid, url, chrono date times, etc.
 
 #[derive(Debug, Serialize, Deserialize)]
+pub struct Backup {}
+
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Cluster {
     #[serde(rename = "masterURL")]
     pub master_url: String,
