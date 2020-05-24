@@ -3,6 +3,7 @@ use anyhow::Result;
 use reqwest::{Client, RequestBuilder};
 
 pub mod db;
+pub mod version;
 
 const API_ROOT: &'static str = "https://api.graphenedb.com/v1";
 

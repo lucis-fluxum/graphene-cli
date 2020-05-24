@@ -86,3 +86,9 @@ pub struct ServerId {
     #[serde(rename = "serverId")]
     pub server_id: i64,
 }
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct Version {
+    pub version: String,
+    pub description: String,
+}

@@ -1,7 +1,10 @@
 use anyhow::{anyhow, Result};
 use clap::{crate_description, crate_name, crate_version, App, AppSettings, Arg};
 use directories_next::ProjectDirs;
-use graphene_cli::{api, config::Config};
+use graphene_cli::{
+    api::{db::DbCmd, version::VersionCmd},
+    config::Config,
+};
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -35,11 +38,12 @@ async fn main() -> Result<()> {
                 .subcommand(App::new("list"))
                 .subcommand(App::new("show").arg(Arg::with_name("name"))),
         )
+        .subcommand(App::new("versions"))
         .get_matches();
 
     match app_matches.subcommand() {
         ("db", Some(matches)) => {
-            let db_cmd = api::db::DbCmd::new(&http_client, &config);
+            let db_cmd = DbCmd::new(&http_client, &config);
             match matches.subcommand() {
                 ("list", _) => {
                     log::debug!("{:#?}", db_cmd.list().await);
@@ -50,6 +54,10 @@ async fn main() -> Result<()> {
                 }
                 _ => {}
             }
+        }
+        ("versions", _) => {
+            let version_cmd = VersionCmd::new(&http_client, &config);
+            log::debug!("{:#?}", version_cmd.list().await);
         }
         _ => {}
     }
