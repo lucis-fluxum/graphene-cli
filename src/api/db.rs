@@ -1,20 +1,19 @@
+use crate::{api::get, config::Config, model::Database};
 use anyhow::Result;
-use crate::{config::Config, model};
+use reqwest::Client;
 
 pub struct DbCmd<'a> {
+    client: &'a Client,
     config: &'a Config,
 }
 
 impl<'a> DbCmd<'a> {
-    pub fn new(config: &'a Config) -> Self {
-        Self { config }
+    pub fn new(client: &'a Client, config: &'a Config) -> Self {
+        Self { client, config }
     }
 
-    pub async fn list(&self) -> Result<Vec<model::Database>> {
-        let client = reqwest::Client::new();
-        let response = client
-            .get("https://api.graphenedb.com/v1/databases")
-            .header("api_key", self.config.api_key())
+    pub async fn list(&self) -> Result<Vec<Database>> {
+        let response = get(self.client, self.config, "databases")?
             .send()
             .await?
             .text()

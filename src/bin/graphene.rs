@@ -19,6 +19,8 @@ async fn main() -> Result<()> {
         config.save().await?;
     }
 
+    let http_client = reqwest::Client::builder().build()?;
+
     let app_matches = App::new(crate_name!())
         .about(crate_description!())
         // TODO: clap doesn't add a newline to version output
@@ -36,7 +38,7 @@ async fn main() -> Result<()> {
 
     match app_matches.subcommand() {
         ("db", Some(matches)) => {
-            let db_cmd = api::db::DbCmd::new(&config);
+            let db_cmd = api::db::DbCmd::new(&http_client, &config);
             match matches.subcommand() {
                 ("list", _) => {
                     log::debug!("{:#?}", db_cmd.list().await);
