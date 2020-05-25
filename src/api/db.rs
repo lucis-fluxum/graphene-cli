@@ -12,12 +12,12 @@ impl<'a> DbCmd<'a> {
         Self { client, config }
     }
 
-    pub(crate) async fn find_id(&self, name: &str) -> Result<String> {
+    pub(crate) async fn find_id(&self, db_name: &str) -> Result<String> {
         let databases: Vec<Database> = self.list().await?;
         Ok(databases
             .into_iter()
-            .find(|d| d.name == name)
-            .context(format!("database not found: '{}'", name))?
+            .find(|d| d.name == db_name)
+            .context(format!("database not found: '{}'", db_name))?
             .id)
     }
 
@@ -31,11 +31,11 @@ impl<'a> DbCmd<'a> {
         Ok(serde_json::from_str(&response)?)
     }
 
-    pub async fn show(&self, name: &str) -> Result<Database> {
+    pub async fn show(&self, db_name: &str) -> Result<Database> {
         let response = get(
             self.client,
             self.config,
-            &format!("databases/{}", self.find_id(name).await?),
+            &format!("databases/{}", self.find_id(db_name).await?),
         )?
         .send()
         .await?

@@ -4,6 +4,7 @@ use reqwest::{Client, RequestBuilder};
 
 pub mod backup;
 pub mod db;
+pub mod user;
 pub mod version;
 
 const API_ROOT: &'static str = "https://api.graphenedb.com/v1";

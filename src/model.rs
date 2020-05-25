@@ -102,6 +102,24 @@ pub struct ServerId {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
+pub struct User {
+    pub id: Option<String>,
+    pub username: Option<String>,
+    pub description: Option<String>,
+    #[serde(rename = "createdBy")]
+    pub created_by: Option<String>,
+    #[serde(rename = "createdAt")]
+    pub created_at: Option<String>,
+    #[serde(rename = "expireAt")]
+    pub expire_at: Option<String>,
+    #[serde(rename = "lastUsedAt")]
+    pub last_used_at: Option<String>,
+
+    // TODO: This appears in responses by itself, forcing other fields to be Options. Why??
+    pub role: Option<String>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Version {
     pub version: String,
     pub description: String,

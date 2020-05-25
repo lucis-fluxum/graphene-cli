@@ -2,7 +2,7 @@ use anyhow::{anyhow, Result};
 use clap::{crate_description, crate_name, crate_version, App, AppSettings, Arg};
 use directories_next::ProjectDirs;
 use graphene_cli::{
-    api::{backup::BackupCmd, db::DbCmd, version::VersionCmd},
+    api::{backup::BackupCmd, db::DbCmd, user::UserCmd, version::VersionCmd},
     config::Config,
 };
 
@@ -43,6 +43,16 @@ async fn main() -> Result<()> {
                 .subcommand(App::new("list"))
                 .subcommand(App::new("show").arg(Arg::with_name("db_name"))),
         )
+        .subcommand(
+            App::new("user")
+                .setting(AppSettings::SubcommandRequiredElseHelp)
+                .subcommand(App::new("list").arg(Arg::with_name("db_name")))
+                .subcommand(
+                    App::new("show")
+                        .arg(Arg::with_name("db_name"))
+                        .arg(Arg::with_name("user_name")),
+                ),
+        )
         .subcommand(App::new("versions"))
         .get_matches();
 
@@ -65,8 +75,23 @@ async fn main() -> Result<()> {
                     log::debug!("{:#?}", db_cmd.list().await);
                 }
                 ("show", Some(matches)) => {
-                    let name: String = matches.value_of_t_or_exit("db_name");
-                    log::debug!("{:#?}", db_cmd.show(&name).await);
+                    let db_name: String = matches.value_of_t_or_exit("db_name");
+                    log::debug!("{:#?}", db_cmd.show(&db_name).await);
+                }
+                _ => {}
+            }
+        }
+        ("user", Some(matches)) => {
+            let user_cmd = UserCmd::new(&http_client, &config);
+            match matches.subcommand() {
+                ("list", Some(matches)) => {
+                    let db_name: String = matches.value_of_t_or_exit("db_name");
+                    log::debug!("{:#?}", user_cmd.list(&db_name).await);
+                }
+                ("show", Some(matches)) => {
+                    let db_name: String = matches.value_of_t_or_exit("db_name");
+                    let user_name: String = matches.value_of_t_or_exit("user_name");
+                    log::debug!("{:#?}", user_cmd.show(&db_name, &user_name).await);
                 }
                 _ => {}
             }
